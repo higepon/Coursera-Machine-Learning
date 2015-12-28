@@ -24,6 +24,7 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
+K = size(Theta2, 1);
          
 % You need to return the following variables correctly 
 J = 0;
@@ -38,6 +39,34 @@ Theta2_grad = zeros(size(Theta2));
 %         variable J. After implementing Part 1, you can verify that your
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
+
+# compute h
+a1 = [ones(1, m); X'];
+z2 = Theta1 * a1;
+a2 = sigmoid(z2);
+a2 = [ones(1, m); a2];
+z3 = Theta2 * a2;
+h = sigmoid(z3);
+
+# make vector Y
+Y = zeros(num_labels, m);
+Y(sub2ind(size(Y), y', 1:m)) = 1;
+
+J = 1/m * sum(sum(-Y .* log(h) - (1 - Y) .* log(1 - h)));
+
+# Regularized cost function
+Theta1_temp = Theta1;
+for i = 1:length(Theta1_temp(:,1))
+    Theta1_temp(i, 1) = 0;
+end;
+
+Theta2_temp = Theta2;
+for i = 1:length(Theta2_temp(:,1))
+    Theta2_temp(i, 1) = 0;
+end;
+
+J = J + (lambda / (2 * m) * (sum(sum(Theta1_temp .^ 2)) + sum(sum(Theta2_temp .^ 2))))
+
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
@@ -61,6 +90,7 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
+
 
 
 
